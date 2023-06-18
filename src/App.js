@@ -35,6 +35,7 @@ function App() {
         justifyContent="space-between"
 
       >
+        {/* Troque esses links aqui, pelos links das suas redes sociais */}
         <a
           href="https://www.youtube.com/@gerson.aguiar.engenharia/videos"
           target="_blank"
@@ -43,6 +44,7 @@ function App() {
           <img src={youtube} className="App-logo" alt="logo" />
         </a>
 
+        {/* Troque esses links aqui, pelos links das suas redes sociais */}
         <a
           href="https://t.me/+xoKyabPuquY5Yzkx"
           target="_blank"
@@ -51,6 +53,7 @@ function App() {
           <img src={telegram} className="App-logo" alt="logo" />
         </a>
 
+        {/* Troque esses links aqui, pelos links das suas redes sociais */}
         <a
           href="https://www.instagram.com/tecnologia.gersonaguiar/"
           target="_blank"
