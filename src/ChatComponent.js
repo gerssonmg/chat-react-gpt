@@ -68,7 +68,7 @@ function ChatComponent() {
   return (
 
     <>
-      <Box pt={2}>
+      <Box pt={2} px={1}>
         <Container style={{
           maxWidth: "420px",
           backgroundColor: "#E0E0E0",

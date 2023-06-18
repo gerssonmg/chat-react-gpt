@@ -4,6 +4,15 @@
   background-color: #333F6A;
 }
 
+.App-link {
+  color: #61dafb;
+}
+
+.App-logo {
+  height: 8vmin;
+  /* pointer-events: none; */
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 10vh;
