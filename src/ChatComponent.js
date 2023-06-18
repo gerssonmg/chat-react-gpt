@@ -9,8 +9,7 @@ import {
 import axios from 'axios';
 import CircularProgress from '@mui/material/CircularProgress';
 
-
-const API_KEY = "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"
+import API_KEY from './const';
 
 function ChatComponent() {
 
