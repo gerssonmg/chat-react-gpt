@@ -1,31 +1,61 @@
 import React, { useState, useEffect } from 'react'
 import './Chat.css';
 import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
+import {
+  Button, Divider
+} from '@mui/material';
+import axios from 'axios';
+import CircularProgress from '@mui/material/CircularProgress';
 
-const DEFAULT_MSG = [
-  {
-    pergunta: 'Gerson: oi',
-    resposta: 'ChatGpt: Ola'
-  },
-  {
-    pergunta: 'Gerson: Tudo bom?',
-    resposta: 'ChatGpt: Otimo'
-  },
-  {
-    pergunta: 'Gerson: Quem e voce?',
-    resposta: 'ChatGpt: Sou o chatGpt, e voce ?'
-  },
-  {
-    pergunta: 'Sou o Gerson Aguiar. Estou construindo um chatGpt com uma galera muito top',
-    resposta: 'Que bacana'
-  }
-]
+
+const API_KEY = "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"
 
 function ChatComponent() {
 
-  const [arrayConversa, setArrayConversa] = useState(DEFAULT_MSG)
+  const [arrayConversa, setArrayConversa] = useState([])
   const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const sendMessage = async () => {
+
+    setArrayConversa([...arrayConversa, {
+      pergunta: message,
+      autor: 'user'
+    }])
+
+    const input = message
+    setMessage('')
+    try {
+      setLoading(true)
+      await axios.post('https://api.openai.com/v1/chat/completions', {
+        messages: [
+          { role: 'user', content: `[[pt]] ${input}` }
+        ],
+        model: 'gpt-3.5-turbo'
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${API_KEY}`
+        }
+      }).then(response => {
+        setLoading(false)
+        response.data.choices.map(msg => setArrayConversa(
+          (prevMessage) => [...prevMessage,
+          { autor: 'bot', pergunta: msg.message.content }]
+        ))
+        setMessage('')
+      }).catch(error => {
+        console.log('error')
+        console.log(error)
+      })
+    } catch (e) {
+      console.log(e)
+    }
+    setLoading(false)
+  }
+
 
   const handleInputChange = (e) => {
     setMessage(e.target.value)
@@ -33,49 +63,77 @@ function ChatComponent() {
 
   const handleMessageSubmit = (e) => {
     e.preventDefault();
-
-    setArrayConversa([...arrayConversa, {
-      pergunta: message,
-      resposta: 'nada'
-    }])
+    sendMessage()
   }
-
-  useEffect(() => {
-    console.log(arrayConversa)
-  }, [arrayConversa]);
 
   return (
 
-    <h1>
+    <>
+      <Box pt={2}>
+        <Container style={{
+          maxWidth: "420px",
+          backgroundColor: "#E0E0E0",
+          borderRadius: '16px',
+          height: "60vh",
+          paddingTop: "12px",
+          display: "flex",
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+        }}>
 
-      {
-        arrayConversa.map(i => {
-          return (
-            <Box key={i.pergunta}>
-              <Box style={{ backgroundColor: "purple" }}>
-                <h3 className="pergunta">
-                  {i.pergunta}
-                </h3>
-                <h3 className="resposta">
-                  {i.resposta}
-                </h3>
-              </Box>
+          <Box overflow='auto'>
+            {
+              arrayConversa.map(i => {
+                return (
+                  <Box
+                    key={i.pergunta} display="flex"
+                    justifyContent={i.autor === 'user' ? 'right' : 'left'}
+                    mt={1}
+                  >
+                    <Box
+                      style={{
+                        maxWidth: '70%',
+                        padding: '4px',
+                        paddingLeft: '8px',
+                        paddingRight: '8px',
+                        borderRadius: '8px',
+                        backgroundColor: i.autor === 'user' ? '#DCFBC6' : '#FFFFFF',
+                        textAlign: i.author === 'user' ? 'right' : 'left',
+                      }}
+                    >
+                      {i.pergunta}
+                    </Box>
+                  </Box>
+                )
+              })
+            }
+          </Box>
+          <Box my={2} >
+            <Box display="flex" >
+              {
+                loading && <CircularProgress size={20} />
+              }
             </Box>
-
-          )
-        })
-      }
-
-      <form onSubmit={handleMessageSubmit}>
-
-        <TextField
-          label="Outlined"
-          variant="outlined"
-          onChange={handleInputChange}
-        />
-      </form>
-
-    </h1>
+            <Divider />
+            <form onSubmit={handleMessageSubmit}>
+              <Box my={2} display="flex" alignItems="center">
+                <TextField
+                  label="Mensagem"
+                  variant="outlined"
+                  onChange={handleInputChange}
+                  value={message}
+                  style={{ marginRight: "10px" }}
+                />
+                <Button type="submit"
+                  variant="contained">
+                  Enviar
+                </Button>
+              </Box>
+            </form>
+          </Box>
+        </Container>
+      </Box >
+    </>
   )
 }
 
